@@ -57,6 +57,18 @@ foreach(SHADER ${SHADERS})
     compile_shader(${SHADER})
 endforeach()
 
+# 添加 external 文件夹
+include_directories(${CMAKE_SOURCE_DIR}/external)
+
+add_library(STB_IMAGE "external/stb_image.cpp")
+set(LIBS ${LIBS} STB_IMAGE)
+
+add_library(TINY_OBJ_LOADER "external/tiny_obj_loader.cc")
+set(LIBS ${LIBS} TINY_OBJ_LOADER)
+
+add_library(TINYFILEDIALOGS "external/tinyfiledialogs.c")
+set(LIBS ${LIBS} TINYFILEDIALOGS)
+
 # 添加可执行文件，源文件在 src 目录下
 add_executable(VulkanApp
         src/main.cpp
@@ -70,7 +82,7 @@ add_custom_target(Shaders DEPENDS ${SPIRV_FILES})
 add_dependencies(VulkanApp Shaders)
 
 # 链接库
-target_link_libraries(VulkanApp ${Vulkan_LIBRARY} ${GLFW_LIBRARY})
+target_link_libraries(VulkanApp ${Vulkan_LIBRARY} ${GLFW_LIBRARY} ${LIBS})
 
 # 构建后复制 SPIR-V 着色器文件到输出目录
 add_custom_command(
